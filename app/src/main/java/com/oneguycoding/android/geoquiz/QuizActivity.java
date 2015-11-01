@@ -3,20 +3,19 @@ package com.oneguycoding.android.geoquiz;
 import android.app.Activity;
 //import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class QuizActivity extends Activity {
-
-	private Button mTrueButton;
-	private Button mFalseButton;
-	private Button mNextButton;
-	private TextView mQuestionTextView;
+	private static final String TAG = QuizActivity.class.getSimpleName();
 
 	private static final TrueFalse[] sQuestionBank;
+	private static final int sLastIndex;
 
 	static {
 		sQuestionBank = new TrueFalse[]{
@@ -26,16 +25,32 @@ public class QuizActivity extends Activity {
 				new TrueFalse(R.string.q_americas, true),
 				new TrueFalse(R.string.q_asia, true),
 		};
+		sLastIndex = sQuestionBank.length-1;
 	}
+
+	private Button mTrueButton;
+	private Button mFalseButton;
+	private ImageButton mNextButton;
+	private ImageButton mPrevButton;
+
+	private TextView mQuestionTextView;
 
 	private int mCurrentIndex = -1;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		Log.d(TAG, "onCreate(Bundle) called");
+
 		setContentView(R.layout.activity_quiz);
 
 		mQuestionTextView = (TextView)findViewById(R.id.question_text_view);
+		mQuestionTextView.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				updateQuestion(+1);
+			}
+		});
 
 		mTrueButton = (Button) findViewById(R.id.true_button);
 		mTrueButton.setOnClickListener(new View.OnClickListener() {
@@ -52,19 +67,61 @@ public class QuizActivity extends Activity {
 			}
 		});
 
-		mNextButton = (Button)findViewById(R.id.next_button);
+		mPrevButton = (ImageButton)findViewById(R.id.prev_button);
+		mPrevButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				updateQuestion(-1);
+			}
+		});
+		mNextButton = (ImageButton)findViewById(R.id.next_button);
 		mNextButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				updateQuestion();
+				updateQuestion(+1);
 			}
 		});
 
-		updateQuestion();
+		updateQuestion(+1);
 	}
 
-	private void updateQuestion() {
-		mCurrentIndex = (mCurrentIndex + 1) % sQuestionBank.length;
+	@Override
+	public void onStart() {
+		super.onStart();
+		Log.d(TAG, "onStart() called");
+	}
+
+	@Override
+	public void onPause() {
+		super.onPause();
+		Log.d(TAG, "onPause() called");
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		Log.d(TAG, "onResume() called");
+	}
+
+	@Override
+	public void onStop() {
+		super.onStop();
+		Log.d(TAG, "onResume() called");
+	}
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		Log.d(TAG, "onDestroy() called");
+	}
+
+	private void updateQuestion(int direction) {
+		mCurrentIndex = (mCurrentIndex + direction);
+		if (mCurrentIndex < 0) {
+			mCurrentIndex = sLastIndex;
+		} else if (mCurrentIndex > sLastIndex) {
+			mCurrentIndex = 0;
+		}
 		int question = sQuestionBank[mCurrentIndex].getQuestion();
 		mQuestionTextView.setText(question);
 	}
