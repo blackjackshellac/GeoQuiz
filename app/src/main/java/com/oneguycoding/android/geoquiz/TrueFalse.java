@@ -3,7 +3,7 @@ package com.oneguycoding.android.geoquiz;
 /**
  * Created by steeve on 10/31/15.
  */
-public class TrueFalse {
+class TrueFalse {
 	private int mQuestion;
 	private boolean mTrueQuestion;
 
